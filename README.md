@@ -11,7 +11,7 @@ Download the Docker Compose file for Airflow:
 
 `curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.9.3/docker-compose.yaml`
 
-On Linux, the quick-start requires your host user ID and group ID to be set to 0. Otherwise, the files created in dags, logs, and plugins will be owned by the root user. Make sure to configure these for Docker Compose:
+On Linux, the quick-start requires your host user ID and group ID to be set to 0. Otherwise, the files created in **dags**, **logs**, and **plugins** will be owned by the root user. Make sure to configure these for Docker Compose:
 
 `mkdir -p ./dags ./logs ./plugins ./config
 echo -e "AIRFLOW_UID=$(id -u)" > .env`
@@ -39,7 +39,7 @@ print(f"The most expensive exchange rate: {max_rate}")
 print(f"The cheapest exchange rate: {min_rate}")
 ```
 
-# Save to CSV
+### Save to CSV ###
 ```
 with open('currency_rates.csv', 'w') as file:
     file.write("Max Rate,Min Rate\n")
@@ -48,3 +48,14 @@ with open('currency_rates.csv', 'w') as file:
     
 After running the script, the output will display the highest and lowest exchange rates, and the data will be saved in a CSV file.
 ![image](https://github.com/user-attachments/assets/00aa64fe-dedf-4a04-a183-fd3a29f5063d)
+
+### Create an Airflow DAG ###
+
+To run the script in Airflow, create a DAG. This is what a DAG looks like:
+![image](https://github.com/user-attachments/assets/5265a75c-b618-4af8-80f4-74db978b4cda)
+
+After running the script, the output will display the highest and lowest exchange rates, and the data will be saved in a CSV file.
+
+**Result**
+The most expensive exchange rate: 38240
+The most cheapest exchange rate: 2.55
