@@ -56,6 +56,7 @@ To run the script in Airflow, create a DAG. This is what a DAG looks like:
 
 After running the script, the output will display the highest and lowest exchange rates, and the data will be saved in a CSV file.
 
-**Result**
-The most expensive exchange rate: 38240
-The most cheapest exchange rate: 2.55
+**Result** <br/><br/>
+The most expensive exchange rate: 38240 <br/><br/>
+The most cheapest exchange rate: 2.55 <br/><br/>
+
