@@ -26,24 +26,54 @@ This script should parse the website and find the highest and lowest currency ex
 import requests
 from bs4 import BeautifulSoup
 
-url = "https://kurs.kz/"
-response = requests.get(url)
-soup = BeautifulSoup(response.text, 'html.parser')
+url = 'https://kurs.kz/'
 
-rates = [float(rate.text) for rate in soup.find_all(class_='some-class')]  # Adjust selector as necessary
+response = requests.get(url, verify=False)
 
-max_rate = max(rates)
-min_rate = min(rates)
+if response.status_code == 200:
+    html_content = response.text
+    
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    scripts = soup.find_all('script')
+    
+    punkts_json = None
+    punkts_from_internet_json = None
+    
+    for script in scripts:
+        script_text = script.string
+        if script_text:
+            if 'var punkts = [' in script_text:
+                start_index = script_text.find('var punkts = ') + len('var punkts = ')
+                end_index = script_text.find(';', start_index)
+                punkts_data = script_text[start_index:end_index].strip()
+                punkts_json = json.loads(punkts_data)
+            
+            if 'var punktsFromInternet = [' in script_text:
+                start_index = script_text.find('var punktsFromInternet = ') + len('var punktsFromInternet = ')
+                end_index = script_text.find(';', start_index)
+                punkts_from_internet_data = script_text[start_index:end_index].strip()
+                punkts_from_internet_json = json.loads(punkts_from_internet_data)
 
-print(f"The most expensive exchange rate: {max_rate}")
-print(f"The cheapest exchange rate: {min_rate}")
+    all_data = punkts_json + punkts_from_internet_json
+    
+    max_rate, min_rate = find_extreme_rates(all_data)
+    print(f"The most expensive exchange rate: {max_rate}")
+    print(f"The cheapest exchange rate: {min_rate}")
 ```
 
 ### Save to CSV ###
 ```
-with open('currency_rates.csv', 'w') as file:
-    file.write("Max Rate,Min Rate\n")
-    file.write(f"{max_rate},{min_rate}\n")
+def save_to_csv(data, filename):
+    if not data:
+        print(f"No data to save for {filename}")
+        return
+    
+    keys = data[0].keys()  
+    with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=keys)
+        writer.writeheader()
+        writer.writerows(data)
 ```
     
 After running the script, the output will display the highest and lowest exchange rates, and the data will be saved in a CSV file.
@@ -52,6 +82,7 @@ After running the script, the output will display the highest and lowest exchang
 ### Create an Airflow DAG ###
 
 To run the script in Airflow, create a DAG. This is what a DAG looks like:
+<br/><br/>
 ![image](https://github.com/user-attachments/assets/5265a75c-b618-4af8-80f4-74db978b4cda)
 
 After running the script, the output will display the highest and lowest exchange rates, and the data will be saved in a CSV file.
